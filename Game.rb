@@ -31,6 +31,8 @@ Each distinct shape will inherit from the base shape class. Each shape will be m
 =end
 class Shape
 	def initialize(game)
+		# every shape is 4 blocks
+		@blocks = [Block.new(game), Block.new(game), Block.new(game), Block.new(game)]
 	end
 	
 	def rotation
