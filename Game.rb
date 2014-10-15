@@ -15,7 +15,7 @@ The block class will be every block in the playing field. Every shape will be ma
 To find out if a line is complete, a touching check is need to see if a block is adjacent to it.
 =end
 class Block
-	def initialize
+	def initialize(game)
 		@image = Gosu::Image.new(self, "block_file", true)
 	end
 	
@@ -30,7 +30,7 @@ end
 Each distinct shape will inherit from the base shape class. Each shape will be made of an organization of blocks.
 =end
 class Shape
-	def initialize
+	def initialize(game)
 	end
 	
 	def rotation
@@ -46,25 +46,47 @@ class Shape
 	end
 end
 
+
+# L shape
 class ShapeA < Shape
+	def initialize(game)
+	end
 end
 
+# reverse L shape
 class ShapeB < Shape
+	def initialize(game)
+	end
 end
 
+# cube shape
 class ShapeC < Shape
+	def initialize(game)
+	end
 end
 
+# line shape
 class ShapeD < Shape
+	def initialize(game)
+	end
 end
 
+# S shape
 class ShapeE < Shape
+	def initialize(game)
+	end
 end
 
+# reverse S shape
 class ShapeF < Shape
+	def initialize(game)
+	end
 end
 
+# intersection shape
 class ShapeG < Shape
+	def initialize(game)
+	end
 end
 
 class GameWindow < Gosu::Window
