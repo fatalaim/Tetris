@@ -79,7 +79,7 @@ class ShapeA < Shape
 		
 		@rotation = @blocks[1]
 		@blocks.each do |block|
-			block.color = 0xffff7f00
+			block.color = 0xffffff00
 		end
 	end
 end
@@ -91,7 +91,7 @@ class ShapeB < Shape
 		
 		@rotation = @blocks[1]
 		@blocks.each do |block|
-			block.color = 0xff0000ff
+			block.color = 0xffff00ff
 		end
 	end
 end
@@ -103,7 +103,7 @@ class ShapeC < Shape
 		
 		@rotation = @blocks[1]
 		@blocks.each do |block|
-			block.color = 0xffffff00
+			block.color = 0xff00ffff
 		end
 	end
 end
@@ -115,7 +115,7 @@ class ShapeD < Shape
 		
 		@rotation = @blocks[1]
 		@blocks.each do |block|
-			block.color = 0xffb2ffff
+			block.color = 0xff00ffff
 		end
 	end
 end
@@ -127,7 +127,7 @@ class ShapeE < Shape
 		
 		@rotation = @blocks[1]
 		@blocks.each do |block|
-			block.color = 0xff00ff00
+			block.color = 0xff0000ff
 		end
 	end
 end
@@ -139,7 +139,7 @@ class ShapeF < Shape
 		
 		@rotation = @blocks[1]
 		@blocks.each do |block|
-			block.color = 0xffff0000
+			block.color = 0xff00ff00
 		end
 	end
 end
@@ -151,7 +151,7 @@ class ShapeG < Shape
 		
 		@rotation = @blocks[1]
 		@blocks.each do |block|
-			block.color = 0xffff00ff
+			block.color = 0xff808080
 		end
 	end
 end
