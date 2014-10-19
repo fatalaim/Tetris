@@ -37,6 +37,7 @@ class Block
 	end
 	
 	def collide(block)
+		return @x == block.x || @y == block.y
 	end
 end
 
@@ -52,7 +53,7 @@ class Shape
 		@x = 0
 		@y = 0
 		
-		@rotation = @blocks[1];
+		@rotation = @blocks[1]
 	end
 	
 	def rotation
@@ -65,9 +66,11 @@ class Shape
 	end
 	
 	def update
+		#falling
 	end
 	
 	def collide
+		#check collision of each block in the shape
 	end
 end
 
@@ -160,6 +163,8 @@ class GameWindow < Gosu::Window
 	def initialize
     		super(640, 480, false)
     		self.caption = "Tetris"
+    		
+    		@grid = Array.new(30, Array.new(10,0.0))
     
     		@background_image = Gosu::Image.new(self, "file", true)
   	end
@@ -168,6 +173,8 @@ class GameWindow < Gosu::Window
 		if (button_down?(Gosu::KbEscape))
 			close
 		end
+		
+		#call next_shape
   	end
 
   	def draw
@@ -175,9 +182,11 @@ class GameWindow < Gosu::Window
   	end
   
   	def next_shape
+  		#creates the shape and adds to playing field
   	end
   
   	def line_finished
+  		#call after each shape is finished falling
   	end
 end
 
