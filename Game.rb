@@ -166,7 +166,7 @@ class GameWindow < Gosu::Window
     		
     		@grid = Array.new(30, Array.new(10,0.0))
     
-    		@background_image = Gosu::Image.new(self, "file", true)
+    		@background_image = Gosu::Image.new(self, "file.png", true)
   	end
 
   	def update
