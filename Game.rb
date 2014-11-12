@@ -1,7 +1,7 @@
 require 'gosu'
 require_relative 'player'
-require './block'
-require './block_shape'
+require_relative 'block'
+require_relative 'block_shape'
 =begin
 The block class will be every block in the playing field. Every shape will be made of blocks.
 To find out if a line is complete, a touching check is need to see if a block is adjacent to it.
