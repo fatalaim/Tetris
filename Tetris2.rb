@@ -6,6 +6,15 @@ include Gosu
 #   CS4121 Team project - Ruby
 #   11/26/14
 #
+#next piece
+
+#two player
+#-game global variables control size
+#-menus
+#-implementing two games at once
+#-interactions between the two (clearing 2+ lines adds lines to opponents)
+
+
 
 
 #TODO fix hardcoded block/game sizes so that these values can control game setup
@@ -16,6 +25,13 @@ $gameHeight = 16
 $delay = 0.5
 $score = 0.0
 
+
+#################################################
+# Block Class
+#  -creates a new block at xgridin,ygridin
+#  - 7 possible colors, chosen with colorInt
+#
+#################################################
 class Block
 
   attr_accessor :xgrid
@@ -63,10 +79,32 @@ class Block
     		   		@x+2, 	  @y+@size-2, @color1, 
     		   		@x+@size-2, @y+@size-2, @color1, 0)
   end  
+  
+  def drawPreview(window)
+   @x = @xgrid*(@size) - @size*3
+   @y = @ygrid*(@size) + @size*6
+   window.draw_quad(@x, 		  @y, 	    @color2, 
+    		   		@x+@size,	  @y,	    @color2, 
+    		   		@x, 		  @y+@size,   @color2, 
+    		   		@x+@size,	  @y+@size,   @color2, 0)
+   window.draw_quad(@x+2, 	  @y+2, 	    @color2, 
+    		   		@x+@size-2, @y+2,	    @color1, 
+    		   		@x+2, 	  @y+@size-2, @color1, 
+    		   		@x+@size-2, @y+@size-2, @color1, 0)
+  end
+  
+  def resize(newSize)
+    @size = newSize
+  end
 end
   
   
-  
+#################################################
+# GameGrid Class
+#  -Handles main logic/drawing of the game
+#  -Handles key press events, which move/rotate the falling shape
+#
+#################################################  
 class GameGrid
   attr_writer :arrow
   
@@ -79,6 +117,7 @@ class GameGrid
 #Draw the background, current shape, blocks, and score
   def draw()
     drawBackground()
+    drawNextPiece()
     
     @blocks.each do |b|
        b.draw @window
@@ -88,7 +127,8 @@ class GameGrid
        b.draw @window   
     end   
     
-    @font.draw("Score: #{Integer($score)}", 20, 20, 0, 1.2, 1.2, 0xff888888)
+    @font.draw("Score: #{Integer($score)}", 15, 10, 0, 1.2, 1.2, 0xff888888)
+    @font.draw("Next: ", 15, 35, 0, 1.2, 1.2, 0xff888888)
   end
 
 #Main loop of the game
@@ -118,6 +158,7 @@ class GameGrid
   	      @blocks.push(s)
   	    end
   	    @shape.clear
+  	    previewToShape()
   	    newShape()
   	    #remove completed lines
   	    @lineCheck = Array.new(19,0) 
@@ -161,53 +202,70 @@ class GameGrid
   def reset()
     @blocks = Array.new
     @shape = Array.new
+    @preview = Array.new
     @oldTime = Time.now
     $score = 0.0
     newShape()
+    previewToShape()
+    newShape()
   end  
   
-#create a random new shape of 4 blocks, saved to the @shape array
+#create a random new shape of 4 blocks, saved to the @preview array
   def newShape()
-    @shapeInt = (1+rand(7))
+    @preview.clear
+    @preShapeInt = (1+rand(7))
     @rotation = 0
-    if @shapeInt == 1 #Line
-      @shape.push(Block.new(5,1,1))
-      @shape.push(Block.new(6,1,1))
-      @shape.push(Block.new(7,1,1))
-      @shape.push(Block.new(8,1,1))
-    elsif @shapeInt == 2 #ReverseL
-      @shape.push(Block.new(5,0,2))
-      @shape.push(Block.new(5,1,2))
-      @shape.push(Block.new(6,1,2))
-      @shape.push(Block.new(7,1,2)) 
-    elsif @shapeInt == 3 #LBlock
-      @shape.push(Block.new(8,0,3)) 
-      @shape.push(Block.new(8,1,3))
-      @shape.push(Block.new(7,1,3))
-      @shape.push(Block.new(6,1,3))
-    elsif @shapeInt == 4 #Square
-      @shape.push(Block.new(6,1,4))
-      @shape.push(Block.new(6,0,4))
-      @shape.push(Block.new(7,1,4))
-      @shape.push(Block.new(7,0,4))
-    elsif @shapeInt == 5 #SBlock
-      @shape.push(Block.new(5,1,5))
-      @shape.push(Block.new(6,1,5))
-      @shape.push(Block.new(6,0,5))
-      @shape.push(Block.new(7,0,5))
-    elsif @shapeInt == 6 #ZBlock
-      @shape.push(Block.new(8,1,6))
-      @shape.push(Block.new(7,1,6))
-      @shape.push(Block.new(7,0,6))
-      @shape.push(Block.new(6,0,6))  
-    elsif @shapeInt == 7 #TBlock
-      @shape.push(Block.new(5,1,7))
-      @shape.push(Block.new(6,1,7))
-      @shape.push(Block.new(6,0,7))  
-      @shape.push(Block.new(7,1,7))
-                  
+    if @preShapeInt == 1 #Line
+      @preview.push(Block.new(5,1,1))
+      @preview.push(Block.new(6,1,1))
+      @preview.push(Block.new(7,1,1))
+      @preview.push(Block.new(8,1,1))
+    elsif @preShapeInt == 2 #ReverseL
+      @preview.push(Block.new(5,0,2))
+      @preview.push(Block.new(5,1,2))
+      @preview.push(Block.new(6,1,2))
+      @preview.push(Block.new(7,1,2)) 
+    elsif @preShapeInt == 3 #LBlock
+      @preview.push(Block.new(8,0,3)) 
+      @preview.push(Block.new(8,1,3))
+      @preview.push(Block.new(7,1,3))
+      @preview.push(Block.new(6,1,3))
+    elsif @preShapeInt == 4 #Square
+      @preview.push(Block.new(6,1,4))
+      @preview.push(Block.new(6,0,4))
+      @preview.push(Block.new(7,1,4))
+      @preview.push(Block.new(7,0,4))
+    elsif @preShapeInt == 5 #SBlock
+      @preview.push(Block.new(5,1,5))
+      @preview.push(Block.new(6,1,5))
+      @preview.push(Block.new(6,0,5))
+      @preview.push(Block.new(7,0,5))
+    elsif @preShapeInt == 6 #ZBlock
+      @preview.push(Block.new(8,1,6))
+      @preview.push(Block.new(7,1,6))
+      @preview.push(Block.new(7,0,6))
+      @preview.push(Block.new(6,0,6))  
+    elsif @preShapeInt == 7 #TBlock
+      @preview.push(Block.new(5,1,7))
+      @preview.push(Block.new(6,1,7))
+      @preview.push(Block.new(6,0,7))  
+      @preview.push(Block.new(7,1,7))                
+    end 
+    
+    #resize the blocks for preview
+    @preview.each do |b|
+      b.resize($blockSize/4)
     end
   end  
+  
+  def previewToShape()
+    @shapeInt = @preShapeInt
+    @preview.each do |b|
+      @shape.push(b)
+      b.resize($blockSize)
+    end
+    @preview.clear  
+  end
 
   
 #handle keypress down (move piece down 1)
@@ -447,11 +505,22 @@ class GameGrid
     				  x, 	 y+ySize, Color.argb(0x44888888), 
     			  	  x+xSize, y+ySize, Color.argb(0x22888888), 0)
   end 
+  
+  def drawNextPiece()
+     @preview.each do |b|
+       b.drawPreview @window
+     end
+  end
 
 end 
   
   
-   
+#################################################
+# GameWindow Class
+#  -Creates the game window
+#  -Contains the entry points for draw() and update()
+#
+#################################################   
 class GameWindow < Window
   def initialize
     super $blockSize*($gameWidth+4), $blockSize*($gameHeight+4), false, 100
