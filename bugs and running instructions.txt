@@ -1,0 +1,15 @@
+* Bugs
+o Cannot rotate at screen edge
+o Cannot hold down move button
+* Features
+o See next block
+o 2 player
+o Integrate on-rails
+
+
+How to Run in windows
+Install ruby 1.9.3 to C drive
+In Terminal Cd into C:\ruby193\bin
+In terminal run: gem install gosu
+In terminal run: ruby ..\Tetris2.rb
+		.. is the path to where Tetris2.rb is located (like 											C:\Tetris2.rb)
