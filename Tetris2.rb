@@ -119,8 +119,8 @@ end
 #################################################  
 class GameGrid
   attr_writer :arrow
-
   def initialize(window,player)
+
     @menuControl =0
     @window = window
     @player = player
@@ -136,6 +136,7 @@ class GameGrid
     if @menuControl ==0
 
       @font.draw("hit esc to start/continue", 15, 10, 0, 1.2, 1.2, 0xff888888)
+
     else
       drawBackground()
       drawNextPiece()
@@ -162,6 +163,7 @@ class GameGrid
 #Main loop of the game
   def update()
     #only update after time delay (decreases as more lines cleared)
+
     if (Time.now - @oldTime) > ($delay-(@score/100))
       collision = false
 
@@ -615,9 +617,11 @@ end
 #
 #################################################   
 class GameWindow < Window
-  @menuControl =0
+
   def initialize
+
     super $blockSize*(($gameWidth+4)*2), $blockSize*($gameHeight+4), false, 100 #1120x800
+    @menuControl =0
     self.caption = "Tetris"
     @gameGrid = GameGrid.new(self,1)
     @gameGrid2 = GameGrid.new(self,2)
@@ -631,7 +635,9 @@ class GameWindow < Window
 
   #Called 1/60 times a second, the main logic loop for the game
   def update()
-    if @menuControl == 1
+    if (@menuControl == 1)
+
+
       @gameGrid.update
       @gameGrid2.update
     end
@@ -640,6 +646,7 @@ class GameWindow < Window
   def button_down(key)
 
     if key == KbEscape
+
       if @menuControl == 0
          @menuControl =1
          @gameGrid.menuController(1)
@@ -647,9 +654,10 @@ class GameWindow < Window
       elsif @menuControl == 1
          @menuControl = 0
          @gameGrid.menuController(0)
-         @gameGrid2.menucontroller(0)
+         @gameGrid2.menuController(0)
       end
     end
+    if @menuControl ==1
     if key == KbDown
       @gameGrid.keyDown()
     elsif key == KbRight
@@ -667,6 +675,7 @@ class GameWindow < Window
     elsif key == KbD
       @gameGrid2.keyRight()
     end
+      end
   end
 end
 
