@@ -128,14 +128,14 @@ class GameGrid
     reset()
   end
 
-  def menuControler(x)
+  def menuController(x)
     @menuControl =x
   end
 #Draw the background, current shape, blocks, and score
   def draw()
     if @menuControl ==0
 
-      @font.draw("hit esc to start", 15, 10, 0, 1.2, 1.2, 0xff888888)
+      @font.draw("hit esc to start/continue", 15, 10, 0, 1.2, 1.2, 0xff888888)
     else
       drawBackground()
       drawNextPiece()
@@ -640,9 +640,15 @@ class GameWindow < Window
   def button_down(key)
 
     if key == KbEscape
-      @menuControl =1
-      @gameGrid.menuControler(1)
-      @gameGrid2.menuControler(1)
+      if @menuControl == 0
+         @menuControl =1
+         @gameGrid.menuController(1)
+         @gameGrid2.menuController(1)
+      elsif @menuControl == 1
+         @menuControl = 0
+         @gameGrid.menuController(0)
+         @gameGrid2.menucontroller(0)
+      end
     end
     if key == KbDown
       @gameGrid.keyDown()
