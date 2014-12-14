@@ -659,21 +659,21 @@ class GameWindow < Window
     end
     if @menuControl ==1
     if key == KbDown
-      @gameGrid.keyDown()
-    elsif key == KbRight
-      @gameGrid.keyRight()
-    elsif key == KbLeft
-      @gameGrid.keyLeft()
-    elsif key == KbUp
-      @gameGrid.keyUp()
-    elsif key == KbW
-      @gameGrid2.keyUp()
-    elsif key == KbA
-      @gameGrid2.keyLeft()
-    elsif key == KbS
       @gameGrid2.keyDown()
-    elsif key == KbD
+    elsif key == KbRight
       @gameGrid2.keyRight()
+    elsif key == KbLeft
+      @gameGrid2.keyLeft()
+    elsif key == KbUp
+      @gameGrid2.keyUp()
+    elsif key == KbW
+      @gameGrid.keyUp()
+    elsif key == KbA
+      @gameGrid.keyLeft()
+    elsif key == KbS
+      @gameGrid.keyDown()
+    elsif key == KbD
+      @gameGrid.keyRight()
     end
       end
   end
