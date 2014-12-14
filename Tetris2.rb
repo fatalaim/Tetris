@@ -538,7 +538,7 @@ class GameGrid
     if rCollision == false && @player == 1
       count = 0
       while count < 4
-        if rotateArray[count][0] < 2 || rotateArray[count][0] > 11 || rotateArray[count][1] > 18
+        if rotateArray[count][0] < 2 || rotateArray[count][0] > 11 || rotateArray[count][1] > 17
           rCollision = true
           break
         end
@@ -555,7 +555,7 @@ class GameGrid
     if rCollision == false && @player == 2
       count = 0
       while count < 4
-        if rotateArray[count][0] < 52 || rotateArray[count][0] > 61 || rotateArray[count][1] > 18
+        if rotateArray[count][0] < 52 || rotateArray[count][0] > 61 || rotateArray[count][1] > 17
           rCollision = true
           break
         end
