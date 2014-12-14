@@ -12,4 +12,10 @@ Install ruby 1.9.3 to C drive
 In Terminal Cd into C:\ruby193\bin
 In terminal run: gem install gosu
 In terminal run: ruby ..\Tetris2.rb
-		.. is the path to where Tetris2.rb is located (like 											C:\Tetris2.rb)
+		.. is the path to where Tetris2.rb is located (like 											C:\Tetris2.rb
+		
+How to run in Linux
+Install ruby with apt-get install ruby-full
+In terminal run: gem install gosu
+In terminal run: ruby Tetris2.rb
+                 while is the Tetris directory
