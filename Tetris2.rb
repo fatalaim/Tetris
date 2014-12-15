@@ -6,13 +6,7 @@ include Gosu
 #   CS4121 Team project - Ruby
 #   11/26/14
 #
-#next piece
-
-#two player
-#-game global variables control size
-#-menus
-#-implementing two games at once
-#-interactions between the two (clearing 2+ lines adds lines to opponents)
+#
 
 
 
@@ -26,7 +20,7 @@ $delay = 0.5
 #################################################
 # Block Class
 #  -creates a new block at xgridin,ygridin
-#  - 7 possible colors, chosen with colorInt
+#  - 8 possible colors, chosen with colorInt
 #
 #################################################
 class Block
@@ -35,30 +29,34 @@ class Block
   attr_accessor :ygrid
   def initialize(xgridin,ygridin,colorInt,player)
 
+    @colorInt = colorInt
     @xgrid = xgridin
     @ygrid = ygridin
     @player = player
 
     @color1 = Color.argb(0xff0000ff)
     @color2 = Color.argb(0xff8888ff)
-    if colorInt==2
+    if @colorInt==2
       @color1 = Color.argb(0xff00aa00)
       @color2 = Color.argb(0xff88ff88)
-    elsif colorInt==3
+    elsif @colorInt==3
       @color1 = Color.argb(0xffff0000)
       @color2 = Color.argb(0xffff8888)
-    elsif colorInt==4
+    elsif @colorInt==4
       @color1 = Color.argb(0xff00cccc)
       @color2 = Color.argb(0xff88ffff)
-    elsif colorInt==5
+    elsif @colorInt==5
       @color1 = Color.argb(0xffff00ff)
       @color2 = Color.argb(0xffff88ff)
-    elsif colorInt==6
+    elsif @colorInt==6
       @color1 = Color.argb(0xffffbb00)
       @color2 = Color.argb(0xffffff88)
-    elsif colorInt==7
+    elsif @colorInt==7
       @color1 = Color.argb(0xff444444)
       @color2 = Color.argb(0xffaaaa88)
+    elsif @colorInt==8
+      @color1 = Color.argb(0xffdddddd)
+      @color2 = Color.argb(0xff333333)   
     end
 
     @size = $blockSize
@@ -78,10 +76,17 @@ class Block
                      @x+@size,	  @y,	    @color2,
                      @x, 		  @y+@size,   @color2,
                      @x+@size,	  @y+@size,   @color2, 0)
+    if @colorInt<8
     window.draw_quad(@x+2, 	  @y+2, 	    @color2,
                      @x+@size-2, @y+2,	    @color1,
                      @x+2, 	  @y+@size-2, @color1,
                      @x+@size-2, @y+@size-2, @color1, 0)
+    else
+    window.draw_quad(@x+2, 	  @y+2, 	    0xffffffff,
+                     @x+@size-2, @y+2,	    0xff0000ff,
+                     @x+2, 	  @y+@size-2, 0xffff0000,
+                     @x+@size-2, @y+@size-2, 0xff00ff00, 0)
+    end
   end
 
   def drawPreview(window)
@@ -119,12 +124,16 @@ class GameGrid
   attr_writer :arrow
   attr_reader :gameOver
   attr_reader :score
+  attr_accessor :addLineCount
+  attr_accessor :sendLineCount
   def initialize(window,player)
 
     @menuControl =0
     @window = window
     @gameOver = false
     @player = player
+    @addLineCount = 0
+    @sendLineCount = 0
     @font = Gosu::Font.new(@window, Gosu::default_font_name, 20)
     reset()
   end
@@ -160,20 +169,24 @@ class GameGrid
 
 #Main loop of the game
   def update()
-    #only update after time delay (decreases as more lines cleared)
   if@menuControl == 1 && @gameOver == false
+     #only update after time delay (decreases as more lines cleared)
+    
     if (Time.now - @oldTime) > ($delay-(@score/100))
+      addLines()
       collision = false
-
+	 
+	 
       #check object below shapes
       @shape.each do |sb|
         ycoord = sb.ygrid
         xcoord = sb.xgrid
+       
         if ycoord == (15+2)
           collision = true
           break
         end
-        @blocks.each do |bb|
+        @blocks.each do |bb|       
           if ycoord == (bb.ygrid-1) && xcoord == bb.xgrid
             collision = true
             break
@@ -194,6 +207,7 @@ class GameGrid
           @lineCheck[b.ygrid] += 1
         end
         count = 0
+        tempScore = @score
         while count < 19
           if @lineCheck[count] >= 10
             @blocks.delete_if{|b| b.ygrid == count}
@@ -205,6 +219,9 @@ class GameGrid
             @score += 1
           end
           count += 1
+        end
+        if (@score - tempScore) > 1
+          @sendLineCount += (@score - tempScore - 1)
         end
 
         #check for losing the game
@@ -235,10 +252,40 @@ class GameGrid
     @oldTime = Time.now
     @score = 0.0
     @gameOver = false
+    @addLineCount = 0
+    @sendLineCount = 0
     newShape()
     previewToShape()
     newShape()
   end
+  
+  
+  def addLines()
+    while @addLineCount > 0
+      @blocks.each do |b|
+        b.ygrid -= 1
+      end
+      @shape.each do |s|
+        s.ygrid -= 1
+      end
+      count = 0
+      skipBlock = (rand(10))
+      while count < 10
+        if(count != skipBlock)
+          if(@player == 2)
+            @blocks.push(Block.new(52+count,17,8,2))
+          else
+            @blocks.push(Block.new(2+count,17,8,1))
+          end
+        end
+        count += 1
+      end
+      @addLineCount -= 1
+    end
+    
+    @addLineCount = 0
+  end
+
 
 #create a random new shape of 4 blocks, saved to the @preview array
   def newShape()
@@ -407,7 +454,6 @@ class GameGrid
 
 #handle keypress up (rotate piece clockwise)
   def keyUp
-
     rCollision = false
     #temp array to check for collisions in the potential rotation
     rotateArray = Array.new(4, [0,0])
@@ -719,6 +765,17 @@ class GameWindow < Window
     else
       @gameGrid.update
       @gameGrid2.update
+    end
+    
+    if @twoPlayer == true
+      if @gameGrid2.sendLineCount > 0
+        @gameGrid.addLineCount += @gameGrid2.sendLineCount
+        @gameGrid2.sendLineCount = 0
+      end
+      if @gameGrid.sendLineCount > 0
+        @gameGrid2.addLineCount += @gameGrid.sendLineCount
+        @gameGrid.sendLineCount = 0
+      end
     end
   end
 
