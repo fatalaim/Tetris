@@ -16,8 +16,6 @@ include Gosu
 
 
 
-
-#TODO fix hardcoded block/game sizes so that these values can control game setup
 $blockSize = 40
 $gameWidth = 10
 $gameHeight = 16
@@ -119,10 +117,13 @@ end
 #################################################  
 class GameGrid
   attr_writer :arrow
+  attr_reader :gameOver
+  attr_reader :score
   def initialize(window,player)
 
     @menuControl =0
     @window = window
+    @gameOver = false
     @player = player
     @font = Gosu::Font.new(@window, Gosu::default_font_name, 20)
     reset()
@@ -133,11 +134,8 @@ class GameGrid
   end
 #Draw the background, current shape, blocks, and score
   def draw()
-    if @menuControl ==0
+    if @menuControl ==1
 
-      @font.draw("hit esc to start/continue", 15, 10, 0, 1.2, 1.2, 0xff888888)
-
-    else
       drawBackground()
       drawNextPiece()
 
@@ -163,7 +161,7 @@ class GameGrid
 #Main loop of the game
   def update()
     #only update after time delay (decreases as more lines cleared)
-
+  if@menuControl == 1 && @gameOver == false
     if (Time.now - @oldTime) > ($delay-(@score/100))
       collision = false
 
@@ -212,7 +210,7 @@ class GameGrid
         #check for losing the game
         @blocks.each do |bb|
           if bb.ygrid == 2 && bb.xgrid == 5 || (bb.ygrid) < 2
-            reset()
+            @gameOver = true
             break
           end
         end
@@ -226,6 +224,7 @@ class GameGrid
 
       @oldTime = Time.now
     end
+  end  
   end
 
 #reset the game data
@@ -235,6 +234,7 @@ class GameGrid
     @preview = Array.new
     @oldTime = Time.now
     @score = 0.0
+    @gameOver = false
     newShape()
     previewToShape()
     newShape()
@@ -536,10 +536,19 @@ class GameGrid
 
     #check for rotation collisions
     if rCollision == false && @player == 1
+      shiftCount = 0
+
+      while shiftCount < 3
+      wallInt = 0 #0 if no wall collision, 1 if left wall, 2 if right wall
       count = 0
       while count < 4
         if rotateArray[count][0] < 2 || rotateArray[count][0] > 11 || rotateArray[count][1] > 17
           rCollision = true
+          if rotateArray[count][0] < 2
+            wallInt = 1
+          elsif rotateArray[count][0] > 11
+            wallInt = 2
+          end
           break
         end
         @blocks.each do |b|
@@ -550,22 +559,77 @@ class GameGrid
         end
         count += 1
       end
+      
+      shiftCount += 1
+      if wallInt == 0 || rCollision == false
+        break
+      end
+      if(shiftCount < 3)
+        if wallInt == 1
+         rotateArray[0] = [rotateArray[0][0]+1, rotateArray[0][1]]
+         rotateArray[1] = [rotateArray[1][0]+1, rotateArray[1][1]]
+         rotateArray[2] = [rotateArray[2][0]+1, rotateArray[2][1]]
+         rotateArray[3] = [rotateArray[3][0]+1, rotateArray[3][1]]
+         rCollision = false
+        elsif wallInt == 2
+         rotateArray[0] = [rotateArray[0][0]-1, rotateArray[0][1]]
+         rotateArray[1] = [rotateArray[1][0]-1, rotateArray[1][1]]
+         rotateArray[2] = [rotateArray[2][0]-1, rotateArray[2][1]]
+         rotateArray[3] = [rotateArray[3][0]-1, rotateArray[3][1]]     
+         rCollision = false
+        end
+      end
+      
+      end
     end
 
     if rCollision == false && @player == 2
+
+      shiftCount = 0
+
+      while shiftCount < 3
+      wallInt = 0 #0 if no wall collision, 1 if left wall, 2 if right wall
       count = 0
       while count < 4
         if rotateArray[count][0] < 52 || rotateArray[count][0] > 61 || rotateArray[count][1] > 17
           rCollision = true
+          if rotateArray[count][0] < 52
+            wallInt = 1
+          elsif rotateArray[count][0] > 61
+            wallInt = 2
+          end
           break
         end
         @blocks.each do |b|
-          if rotateArray[count][0] == b.xgrid && rotateArray[count][1] == b.ygrid
+          if rotateArray[count][0] == b.xgrid && (rotateArray[count][1] == b.ygrid || rotateArray[count][+1] == b.ygrid) 
             rCollision = true
             break
           end
         end
         count += 1
+      end
+      
+      
+      shiftCount += 1
+      if wallInt == 0 || rCollision == false
+        break
+      end
+      if(shiftCount < 3)
+        if wallInt == 1
+         rotateArray[0] = [rotateArray[0][0]+1, rotateArray[0][1]]
+         rotateArray[1] = [rotateArray[1][0]+1, rotateArray[1][1]]
+         rotateArray[2] = [rotateArray[2][0]+1, rotateArray[2][1]]
+         rotateArray[3] = [rotateArray[3][0]+1, rotateArray[3][1]]
+         rCollision = false
+        elsif wallInt == 2
+         rotateArray[0] = [rotateArray[0][0]-1, rotateArray[0][1]]
+         rotateArray[1] = [rotateArray[1][0]-1, rotateArray[1][1]]
+         rotateArray[2] = [rotateArray[2][0]-1, rotateArray[2][1]]
+         rotateArray[3] = [rotateArray[3][0]-1, rotateArray[3][1]]     
+         rCollision = false
+        end
+      end
+      
       end
     end
 
@@ -621,7 +685,11 @@ class GameWindow < Window
   def initialize
 
     super $blockSize*(($gameWidth+4)*2), $blockSize*($gameHeight+4), false, 100 #1120x800
+    @font = Gosu::Font.new(self, Gosu::default_font_name, 20)
+    @logo = Gosu::Image.new(self, "tetrislogo.png", true)
+    @bigLogo = Gosu::Image.new(self, "tetrislogo2.png", true)
     @menuControl =0
+    @twoPlayer = false
     self.caption = "Tetris"
     @gameGrid = GameGrid.new(self,1)
     @gameGrid2 = GameGrid.new(self,2)
@@ -629,34 +697,110 @@ class GameWindow < Window
 
   #Called automagically by Gosu whenever needed
   def draw()
+    drawMenu()
     @gameGrid.draw()
     @gameGrid2.draw()
   end
 
   #Called 1/60 times a second, the main logic loop for the game
   def update()
-    if (@menuControl == 1)
 
-
+    if @gameGrid2.gameOver == true
+      @menuControl = 3
+      @gameGrid2.menuController(0)
+      if @twoPlayer == true
+        @menuControl = 5
+        @gameGrid.menuController(0)
+      end
+    elsif @twoPlayer == true && @gameGrid.gameOver == true
+      @menuControl = 4
+      @gameGrid.menuController(0)
+      @gameGrid2.menuController(0)
+    else
       @gameGrid.update
       @gameGrid2.update
     end
   end
 
+  def drawMenu()
+    if @menuControl == 0
+      @bigLogo.draw(250,100,1)
+      @font.draw("-> Press 1 for a single player game", 400, 340, 0, 1.2, 1.2, 0xff888888)
+      @font.draw("-> Press 2 for a two player game", 400, 360, 0, 1.2, 1.2, 0xff888888)
+    elsif @menuControl == 1 && @twoPlayer == false
+     @logo.draw(150,200,1)
+    elsif @menuControl == 1 && @twoPlayer == true 
+     @font.draw("Player 1", 800, 730, 0, 1.2, 1.2, 0xff888888)
+     @font.draw("Player 2", 220, 730, 0, 1.2, 1.2, 0xff888888)
+    elsif @menuControl == 2 && @twoPlayer == false
+     @logo.draw(150,200,1)
+     @font.draw("Game paused", 240, 320, 0, 1.5, 1.5, 0xff888888)
+     @font.draw("-> Press Space to continue", 170, 360, 0, 1.2, 1.2, 0xff888888)
+     @font.draw("-> Press Esc to restart", 170, 380, 0, 1.2, 1.2, 0xff888888)   
+    elsif @menuControl == 2 
+     @logo.draw(400,200,1)
+     @font.draw("Game paused", 490, 320, 0, 1.5, 1.5, 0xff888888)
+     @font.draw("-> Press Space to continue", 420, 360, 0, 1.2, 1.2, 0xff888888)
+     @font.draw("-> Press Esc to restart", 420, 380, 0, 1.2, 1.2, 0xff888888)        
+    elsif @menuControl > 2 
+     @logo.draw(400,200,1)
+     @font.draw("Game Over!", 490, 320, 0, 1.5, 1.5, 0xff888888)
+     @font.draw("-> Press Esc to restart", 420, 450, 0, 1.2, 1.2, 0xff888888) 
+     if @menuControl == 3
+       @font.draw("You cleared #{Integer(@gameGrid2.score)} lines", 445, 350, 0, 1.5, 1.5, 0xff888888)   
+	elsif @menuControl == 4
+	  @font.draw("Player 1 wins!", 475, 350, 0, 1.5, 1.5, 0xff888888)    
+	elsif @menuControl == 5
+	  @font.draw("Player 2 wins!", 475, 350, 0, 1.5, 1.5, 0xff888888)
+	end 
+    end
+  end
+
   def button_down(key)
 
-    if key == KbEscape
+    if key == KbSpace
+	#menuControl: 0=Main menu 1=Game running 2=game paused 3=game over
+      if @menuControl == 2
+         @menuControl =1
+         @gameGrid2.menuController(1)
+         if @twoPlayer == true
+           @gameGrid.menuController(1)
+         end
+      elsif @menuControl == 1
+         @menuControl = 2
+         @gameGrid.menuController(0)
+         @gameGrid2.menuController(0)
+      end
+    end
+    
+    if key == Kb1
+
+      if @menuControl == 0
+         @menuControl =1
+         @gameGrid.menuController(0)
+         @gameGrid2.menuController(1)
+         @twoPlayer = false
+      end
+    end
+    
+    if key == Kb2
 
       if @menuControl == 0
          @menuControl =1
          @gameGrid.menuController(1)
          @gameGrid2.menuController(1)
-      elsif @menuControl == 1
-         @menuControl = 0
-         @gameGrid.menuController(0)
-         @gameGrid2.menuController(0)
+         @twoPlayer = true
       end
     end
+
+    if key == KbEscape && @menuControl > 1
+      @gameGrid.reset()
+      @gameGrid2.reset()
+      @menuControl = 0
+      @gameGrid.menuController(0)
+      @gameGrid2.menuController(0)
+    end
+    
     if @menuControl ==1
     if key == KbDown
       @gameGrid2.keyDown()
