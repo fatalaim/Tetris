@@ -6,7 +6,15 @@ include Gosu
 #   CS4121 Team project - Ruby
 #   11/26/14
 #
+# By:
+# Mickey Bartkowiak
+# John Clevenger
+# Kevin Erkkila
+# Matthew Johnson
 #
+# Music by: Jeremy Robson (remix), Hirokazu Tanaka (original)
+# ocremix.org/remix/OCR01413  accessed:12/16/14
+
 
 
 
@@ -787,6 +795,7 @@ class GameWindow < Window
       @bigLogo.draw(250,100,1)
       @font.draw("-> Press 1 for a single player game", 400, 340, 0, 1.2, 1.2, 0xff888888)
       @font.draw("-> Press 2 for a two player game", 400, 360, 0, 1.2, 1.2, 0xff888888)
+      @font.draw("Press H for help", 480, 760, 0, 1.2, 1.2, 0xff888888)
     elsif @menuControl == 1 && @twoPlayer == false
      @logo.draw(150,200,1)
     elsif @menuControl == 1 && @twoPlayer == true 
@@ -802,7 +811,7 @@ class GameWindow < Window
      @font.draw("Game paused", 490, 320, 0, 1.5, 1.5, 0xff888888)
      @font.draw("-> Press Space to continue", 420, 360, 0, 1.2, 1.2, 0xff888888)
      @font.draw("-> Press Esc to restart", 420, 380, 0, 1.2, 1.2, 0xff888888)        
-    elsif @menuControl > 2 
+    elsif @menuControl > 2 && @menuControl < 6
      @logo.draw(400,200,1)
      @font.draw("Game Over!", 490, 320, 0, 1.5, 1.5, 0xff888888)
      @font.draw("-> Press Esc to restart", 420, 450, 0, 1.2, 1.2, 0xff888888) 
@@ -812,14 +821,35 @@ class GameWindow < Window
 	  @font.draw("Player 1 wins!", 475, 350, 0, 1.5, 1.5, 0xff888888)    
 	elsif @menuControl == 5
 	  @font.draw("Player 2 wins!", 475, 350, 0, 1.5, 1.5, 0xff888888)
-	end 
+	end
+    elsif @menuControl == 6
+      @bigLogo.draw(250,100,1)
+      @font.draw("Help", 100, 300, 0, 1.5, 1.5, 0xff888888) 
+      @font.draw("Controls:", 100, 340, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Use arrow left, right, and down to move the falling block", 100, 360, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Use arrow up to rotate the falling block", 100, 380, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Press space to pause the game. While paused, hit esc to exit the game", 100, 400, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Goal:", 100, 430, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Fill an entire row with blocks to clear that line and add one point to the score", 100, 450, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("The game is over if the blocks stack to the top of the play area", 100, 470, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Two player:", 100, 510, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("The second player's game is controlled by keys W, A, S, and D.", 100, 530, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Clearing two or more lines adds one or more (up to three) lines to the opponents game", 100, 550, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("The last player remaining wins", 100, 570, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("About:", 100, 610, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("By: Mickey Bartkowiak, John Clevenger, Kevin Erkkila, Matthew Johnson", 100, 630, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("12/16/14", 100, 650, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Music credited to:", 100, 680, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Jeremy Robson (remix), Hirokazu Tanaka (original)", 100, 700, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("ocremix.org/remix/OCR01413, accessed:12/16/14 ", 100, 720, 0, 1.2, 1.2, 0xff888888) 
+      @font.draw("Press esc to return", 100, 760, 0, 1.2, 1.2, 0xff888888) 
     end
   end
 
   def button_down(key)
 
     if key == KbSpace
-	#menuControl: 0=Main menu 1=Game running 2=game paused 3=game over
+	#menuControl: 0=Main menu 1=Game running 2=game paused 3=game over 4=p1 win 5=p2 win 6=help
       if @menuControl == 2
          @menuControl =1
          @gameGrid2.menuController(1)
@@ -852,6 +882,10 @@ class GameWindow < Window
          @twoPlayer = true
       end
     end
+    
+    if key == KbH && @menuControl == 0
+      @menuControl = 6
+    end
 
     if key == KbEscape && @menuControl > 1
       @gameGrid.reset()
@@ -878,7 +912,7 @@ class GameWindow < Window
       @gameGrid.keyDown()
     elsif key == KbD
       @gameGrid.keyRight()
-    end
+    end  
       end
   end
 end
