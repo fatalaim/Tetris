@@ -175,7 +175,7 @@ class GameGrid
     if (Time.now - @oldTime) > ($delay-(@score/100))
       addLines()
       collision = false
-	 
+
 	 
       #check object below shapes
       @shape.each do |sb|
@@ -739,6 +739,10 @@ class GameWindow < Window
     self.caption = "Tetris"
     @gameGrid = GameGrid.new(self,1)
     @gameGrid2 = GameGrid.new(self,2)
+
+    @music = Gosu::Song.new(self, "music.wav")
+
+    @music.play(true)
   end
 
   #Called automagically by Gosu whenever needed
@@ -750,7 +754,6 @@ class GameWindow < Window
 
   #Called 1/60 times a second, the main logic loop for the game
   def update()
-
     if @gameGrid2.gameOver == true
       @menuControl = 3
       @gameGrid2.menuController(0)
