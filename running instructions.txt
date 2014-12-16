@@ -4,9 +4,12 @@ In Terminal Cd into C:\ruby193\bin
 In terminal run: gem install gosu
 In terminal run: ruby ..\Tetris2.rb
 		.. is the path to where Tetris2.rb is located (like 											C:\Tetris2.rb
+
+Windows: We have also packaged our program into an executable to make running the game on Windows simpler.
+Run Tetris.exe
 		
 How to run in Linux
 Install ruby with apt-get install ruby-full
 In terminal run: gem install gosu
 In terminal run: ruby Tetris2.rb
-                 while is the Tetris directory
+                 while in the Tetris directory
